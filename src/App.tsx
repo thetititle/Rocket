@@ -1,8 +1,31 @@
-// svg로 로고 만들면 import
-// common.css 임포트
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom';
+import Layout from './components/Layout';
+import HomePage from './routes/HomePage';
+import { GlobalStyle } from './GlobalStyle';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        path: '/Home',
+        element: <HomePage />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  return <></>;
+  return (
+    <>
+      <GlobalStyle />
+      <RouterProvider router={router} />;
+    </>
+  );
 }
 
 export default App;
