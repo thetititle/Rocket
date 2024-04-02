@@ -5,25 +5,65 @@ import {
 import Layout from './components/Layout';
 import HomePage from './routes/HomePage';
 import { GlobalStyle } from './GlobalStyle';
+import { useEffect, useState } from 'react';
+import { auth } from './firebase';
+import LoginPage from './routes/LoginPage';
+import CreateAccount from './routes/CreateAccount';
+import Loading from './components/Loading';
+import ProtectRoute from './components/ProtectRoute';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: (
+      <ProtectRoute>
+        <Layout />
+      </ProtectRoute>
+    ),
     children: [
       {
-        path: '/Home',
+        path: '/home',
         element: <HomePage />,
       },
     ],
   },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/createaccount',
+    element: <CreateAccount />,
+  },
 ]);
 
 function App() {
+  const [isLoading, setLoading] = useState(true);
+  const init = async () => {
+    await auth.authStateReady();
+    setLoading(false);
+    // window.onbeforeunload = () => {
+    //   if (!isLoading) {
+    //     return '';
+    //   }
+    // };
+    // window.onunload = () => {
+    //   if (!isLoading) {
+    //     auth.signOut();
+    //   }
+    // };
+  };
+  useEffect(() => {
+    init();
+  }, []);
   return (
     <>
       <GlobalStyle />
-      <RouterProvider router={router} />;
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <RouterProvider router={router} />
+      )}
     </>
   );
 }

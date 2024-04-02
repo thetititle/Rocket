@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Wrapper,
   Wrap,
@@ -14,30 +14,32 @@ import {
 import logo from '../logo.svg';
 import GithubLogo from '../asset/img/github-logo.svg';
 import GoogleLogo from '../asset/img/google-logo.svg';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useState } from 'react';
-import { FirebaseError } from 'firebase/app';
 import {
-  GithubAuthProvider,
-  signInWithPopup,
-  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  updateProfile,
 } from 'firebase/auth';
-import ResetPasswordBtn from '../components/ResetPasswordBtn';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FirebaseError } from 'firebase/app';
 
-export default function LoginPage() {
+export default function CreateAccount() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  // input값이 바뀔 때 이벤트
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    // e를 name과 value로 받겠다.
     const {
       target: { name, value },
     } = e;
-    if (name === 'email') {
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'email') {
       setEmail(value);
     } else if (name === 'password') {
       setPassword(value);
@@ -46,84 +48,72 @@ export default function LoginPage() {
   const onSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
-    console.log('로그인');
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const credential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      await updateProfile(credential.user, {
+        displayName: name,
+      });
       navigate('/home');
     } catch (error) {
       if (error instanceof FirebaseError) {
         setError(error.message);
       }
+    } finally {
     }
   };
-  const loginGithub = () => {
-    try {
-      const provider = new GithubAuthProvider();
-      console.log('깃헙로그인', provider);
-      signInWithPopup(auth, provider);
-      navigate('/home');
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        setError(error.message);
-      }
-    }
-  };
-  const loginGoogle = () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      console.log('구글로그인', provider);
-      signInWithPopup(auth, provider);
-      navigate('/home');
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        setError(error.message);
-      }
-    }
-  };
-
   return (
     <Wrapper>
       <Wrap>
         <BigLogo src={logo} />
         <FormWrap>
-          <h1>Sign in Rocket🚀</h1>
+          <h1>Join in Rocket🚀</h1>
           <Form onSubmit={onSubmit}>
             <Input
+              name="name"
+              placeholder="이름"
+              type="name"
+              required
+              onChange={onChange}
+              value={name}
+            />
+            <Input
               name="email"
-              placeholder="Email"
+              placeholder="이메일"
               type="email"
               required
               onChange={onChange}
+              value={email}
             />
             <Input
               name="password"
-              placeholder="Password"
+              placeholder="비밀번호"
               type="password"
               required
               onChange={onChange}
+              value={password}
             />
             <Input type="submit" value="BORAD" />
           </Form>
           {error !== '' ? <Error>{error}</Error> : null}
           <Switcher>
-            계정이 없으신가요?{' '}
-            <Link to="/CreateAccount">회원가입</Link>
+            이미 계정이 있으신가요?{' '}
+            <Link to="/Login">로그인</Link>
           </Switcher>
           <BtnWrap>
-            <button onClick={loginGoogle}>
+            <button>
               <BtnLogo src={GoogleLogo} />
-              Login with Google
+              Join with Google
             </button>
-            <button onClick={loginGithub}>
+            <button>
               <BtnLogo src={GithubLogo} />
-              Login with Github
+              Join with Github
             </button>
-            <ResetPasswordBtn />
           </BtnWrap>
         </FormWrap>
       </Wrap>
