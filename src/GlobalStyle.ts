@@ -1,4 +1,7 @@
-import { createGlobalStyle } from 'styled-components';
+import {
+  createGlobalStyle,
+  styled,
+} from 'styled-components';
 import reset from 'styled-reset';
 import AppleSDGothicNeoEB00 from './asset/font/AppleSDGothicNeoB00.woff';
 import AppleSDGothicNeoH00 from './asset/font/AppleSDGothicNeoH00.woff';
@@ -149,4 +152,11 @@ export const GlobalStyle = createGlobalStyle`
   .hidden{
     display: none;
   }
+`;
+
+export const UserAvatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  object-fit: cover;
 `;
