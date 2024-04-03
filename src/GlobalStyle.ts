@@ -146,4 +146,7 @@ export const GlobalStyle = createGlobalStyle`
       transition: 0.3s;
     }
   }
+  .hidden{
+    display: none;
+  }
 `;

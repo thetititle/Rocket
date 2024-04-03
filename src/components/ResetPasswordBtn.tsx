@@ -12,7 +12,7 @@ import {
 import { useState } from 'react';
 export default function ResetPasswordBtn() {
   const [email, setEmail] = useState('');
-  const [dispaly, setDispaly] = useState({
+  const [display, setDispaly] = useState({
     display: 'none',
   });
   const openModal = () => {
@@ -34,7 +34,7 @@ export default function ResetPasswordBtn() {
       <button className="border" onClick={openModal}>
         비밀번호를 잊으셨나요?
       </button>
-      <ModalWapper style={dispaly}>
+      <ModalWapper style={display}>
         <Modal>
           <h1>🔐비밀번호 재설정</h1>
           <Span>

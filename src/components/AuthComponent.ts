@@ -14,7 +14,7 @@ export const FormWrap = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 250px;
+  width: 300px;
 `;
 export const Form = styled.form`
   display: flex;
