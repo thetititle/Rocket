@@ -1,8 +1,17 @@
 import styled from 'styled-components';
 import { UserAvatar } from '../GlobalStyle';
 import { useState } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import {
+  addDoc,
+  collection,
+  updateDoc,
+} from 'firebase/firestore';
+import { auth, db, storage } from '../firebase';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage';
 
 const Wrapper = styled.form`
   height: 120px;
@@ -70,38 +79,51 @@ const FileUpLoad = styled.label`
 export default function TweetForm() {
   const user = auth.currentUser;
   const [text, setText] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [gif, setGig] = useState<File | null>(null);
+  const [imgFile, setImgFile] = useState<File | null>(null);
 
   const onChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setText(e.target.value);
   };
-  const upLoadPhoto = (
+  const upLoadImage = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log('포토', e);
+    const { files } = e.target;
+    if (files) {
+      setImgFile(files[0]);
+    }
   };
-  const upLoadGif = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    console.log('gif', e);
-  };
+
   const onSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
     if (!user || text === '' || text.length > 150) return;
     try {
-      await addDoc(collection(db, 'tweets'), {
+      const doc = await addDoc(collection(db, 'tweets'), {
         text,
         createTime: Date.now(),
         userName: user?.displayName || 'Anonymous',
         userId: user?.uid,
       });
+      if (imgFile) {
+        const locationRef = ref(
+          storage,
+          `tweets/${user.uid}-${user.displayName}/${doc.id}`
+        );
+        const result = await uploadBytes(
+          locationRef,
+          imgFile
+        );
+        const url = await getDownloadURL(result.ref);
+        await updateDoc(doc, { imgUrl: url });
+      }
     } catch (error) {
       console.log('error', error);
+    } finally {
+      setText('');
+      setImgFile(null);
     }
   };
 
@@ -113,11 +135,12 @@ export default function TweetForm() {
           placeholder="무슨 일이 있나요?"
           maxLength={150}
           required
+          value={text}
           onChange={onChange}
         ></TextArea>
         <BtnWrap>
           <FileWrap>
-            <FileUpLoad htmlFor="Photo">
+            <FileUpLoad htmlFor="file">
               <svg
                 fill="none"
                 strokeWidth={1.5}
@@ -134,32 +157,11 @@ export default function TweetForm() {
               </svg>
             </FileUpLoad>
             <FileInput
-              onChange={upLoadPhoto}
+              name="file"
+              onChange={upLoadImage}
               type="file"
-              id="Photo"
-              accept="image/png, image/jpeg, image/jpg"
-            />
-            <FileUpLoad htmlFor="Gif">
-              <svg
-                fill="none"
-                strokeWidth={1.5}
-                stroke="#1D9BF0"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12.75 8.25v7.5m6-7.5h-3V12m0 0v3.75m0-3.75H18M9.75 9.348c-1.03-1.464-2.698-1.464-3.728 0-1.03 1.465-1.03 3.84 0 5.304 1.03 1.464 2.699 1.464 3.728 0V12h-1.5M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
-                />
-              </svg>
-            </FileUpLoad>
-            <FileInput
-              onChange={upLoadGif}
-              type="file"
-              id="Gif"
-              accept="image/gif"
+              id="file"
+              accept="image/*"
             />
           </FileWrap>
           <BtnPost>FIRE</BtnPost>

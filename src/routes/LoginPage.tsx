@@ -46,7 +46,6 @@ export default function LoginPage() {
   const onSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
-    console.log('로그인');
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(

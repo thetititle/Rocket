@@ -42,17 +42,17 @@ function App() {
   const init = async () => {
     await auth.authStateReady();
     setLoading(false);
-    // window.onbeforeunload = () => {
-    //   if (!isLoading) {
-    //     return '';
-    //   }
-    // };
-    // window.onunload = () => {
-    //   if (!isLoading) {
-    //     auth.signOut();
-    //   }
-    // };
   };
+  // window.onbeforeunload = (e) => {
+  //   e.preventDefault();
+  //   if (!isLoading) {
+  //     if ((e.returnValue = true)) {
+  //       auth.signOut();
+  //     } else {
+  //       return;
+  //     }
+  //   }
+  // };
   useEffect(() => {
     init();
   }, []);
