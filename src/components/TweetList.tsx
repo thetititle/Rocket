@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import { UserAvatar } from '../GlobalStyle';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
-import { useEffect, useState } from 'react';
+import { Itweet } from './TimeLine';
+import { useEffect } from 'react';
 
 // 트윗
 const Wrapper = styled.div`
@@ -33,38 +32,29 @@ const CreateTime = styled.span`
 const TweetValue = styled.div`
   flex: 1;
 `;
+const Photo = styled.img`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+`;
 
-export interface Itweet {
-  id: string;
-  imgUrl?: string;
-  text: string;
-  userId: string;
-  userName: string;
-  createTime: number;
-}
-
-export default function TweetList() {
-  const [tweet, setTweet] = useState<Itweet[]>([]);
-  useEffect(() => {
-    // const fetchTweet = async () => {
-    //   const querySnapshot = await getDocs(
-    //     collection(db, 'tweets')
-    //   );
-    //   querySnapshot.forEach((doc) => {
-    //     console.log(doc);
-    //   });
-    // };
-  }, []);
-
+export default function TweetList({
+  text,
+  createdTime,
+  userName,
+  imgUrl,
+}: Itweet) {
   return (
     <Wrapper>
       <UserAvatar />
       <TimeLineWrap>
         <UserInfoWrap>
-          <UserName>{'이름'}</UserName>
-          <CreateTime>{'시간'}</CreateTime>
+          <UserName>{userName}</UserName>
+          <CreateTime>{createdTime}</CreateTime>
         </UserInfoWrap>
-        <TweetValue></TweetValue>
+        <TweetValue>
+          {text} {imgUrl ? <Photo src={imgUrl} /> : null}
+        </TweetValue>
       </TimeLineWrap>
     </Wrapper>
   );

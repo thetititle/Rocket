@@ -91,7 +91,15 @@ export default function TweetForm() {
   ) => {
     const { files } = e.target;
     if (files) {
-      setImgFile(files[0]);
+      // 최대용량 1MB 제한
+      let maxSize = 1 * 1024 * 1024;
+      let fileSize = files[0].size;
+      if (fileSize > maxSize) {
+        confirm('첨부파일 최대용량은 1MB입니다.');
+        return;
+      } else {
+        setImgFile(files[0]);
+      }
     }
   };
 
@@ -103,7 +111,7 @@ export default function TweetForm() {
     try {
       const doc = await addDoc(collection(db, 'tweets'), {
         text,
-        createTime: Date.now(),
+        createdTime: Date.now(),
         userName: user?.displayName || 'Anonymous',
         userId: user?.uid,
       });

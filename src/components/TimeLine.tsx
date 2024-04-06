@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import TweetForm from './TweetForm';
 import TweetList from './TweetList';
@@ -8,6 +8,7 @@ const Wrapper = styled.div`
   width: 100%;
   border-right: 1px solid var(--fontDefault);
   border-left: 1px solid var(--fontDefault);
+  overflow-y: scroll;
 `;
 // tab
 const TabMenu = styled.ul`
@@ -30,8 +31,29 @@ const TabMenu = styled.ul`
   }
 `;
 
+import {
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore';
+import { db } from '../firebase';
+import { Unsubscribe } from 'firebase/auth';
+
+export interface Itweet {
+  id: string;
+  imgUrl?: string;
+  text: string;
+  userId: string;
+  userName: string;
+  createdTime: number;
+}
+
 export default function TimeLine() {
   const [currentTab, setTab] = useState(0);
+  const [tweet, setTweet] = useState<Itweet[]>([]);
   const nameTab = [
     { name: 'For you', id: 1 },
     { name: 'Following you', id: 2 },
@@ -39,6 +61,64 @@ export default function TimeLine() {
   const selectTabMenu = (index: number) => {
     setTab(index);
   };
+
+  useEffect(() => {
+    let unSubscribe: Unsubscribe | null = null;
+    const fetchTweet = async () => {
+      const tweetQuery = query(
+        collection(db, 'tweets'),
+        orderBy('createdTime', 'desc'),
+        limit(25)
+        // 계속 스크롤하면 25개씩 더 불러오도록 코드 추가
+      );
+      // const querySnapshot = await getDocs(tweetQuery);
+      // const tweets = querySnapshot.docs.map((doc) => {
+      //   const {
+      //     text,
+      //     createdTime,
+      //     userId,
+      //     userName,
+      //     imgUrl,
+      //   } = doc.data();
+      //   return {
+      //     id: doc.id,
+      //     text,
+      //     createdTime,
+      //     userId,
+      //     userName,
+      //     imgUrl,
+      //   };
+      // });
+      unSubscribe = await onSnapshot(
+        tweetQuery,
+        (snapshot) => {
+          // 실시간 쿼리
+          const tweets = snapshot.docs.map((doc) => {
+            const {
+              text,
+              createdTime,
+              userId,
+              userName,
+              imgUrl,
+            } = doc.data();
+            return {
+              id: doc.id,
+              text,
+              createdTime,
+              userId,
+              userName,
+              imgUrl,
+            };
+          });
+          setTweet(tweets);
+        }
+      );
+    };
+    fetchTweet();
+    return () => {
+      unSubscribe && unSubscribe();
+    };
+  }, []);
 
   return (
     <Wrapper>
@@ -60,7 +140,9 @@ export default function TimeLine() {
         ))}
       </TabMenu>
       <TweetForm />
-      <TweetList />
+      {tweet.map((t) => (
+        <TweetList key={t.id} {...t} />
+      ))}
     </Wrapper>
   );
 }
