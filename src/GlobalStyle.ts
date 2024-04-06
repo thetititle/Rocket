@@ -152,6 +152,16 @@ export const GlobalStyle = createGlobalStyle`
   .hidden{
     display: none;
   }
+
+  svg {
+    transition: 0.3s;
+    &:hover{
+      background-color: rgba(255, 255, 255, 0.1);
+      stroke: var(--highLight);
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+  }
 `;
 
 export const UserAvatar = styled.img`
