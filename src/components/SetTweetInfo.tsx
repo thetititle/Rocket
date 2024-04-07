@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Wrapper,
   Ul,
@@ -6,17 +5,22 @@ import {
   Radio,
   Label,
 } from './DropdownNav';
-export default function SetTweetInfo() {
-  const [display, setDispaly] = useState({
-    display: 'none',
-  });
-  const setShow = () => {
-    setDispaly({ display: 'block' });
+
+interface isDisplay {
+  display: boolean;
+  callbackDisplay(): void;
+}
+
+export default function SetTweetInfo(props: isDisplay) {
+  console.log('props: isDisplay', props.display);
+  const propsDisplay = () => {
+    props.display === false;
+    props.callbackDisplay;
   };
   return (
-    <Wrapper onFocus={setShow} style={display}>
+    <Wrapper>
       <Ul>
-        <Li>
+        <Li onClick={propsDisplay}>
           <Radio
             type="radio"
             name="modifyTweet"

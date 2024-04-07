@@ -83,10 +83,8 @@ export default function TweetList({
   const [isLikes, setLikes] = useState<boolean>(false);
   const [hasComment, setComment] = useState<boolean>(false);
   const [reTweet, setRetweet] = useState<boolean>(false);
+  const [display, setDispaly] = useState(false);
 
-  const setTweetinfo = () => {
-    console.log('delete modify nav show');
-  };
   const likeThisTweet = () => {
     setLikes(!isLikes);
   };
@@ -99,6 +97,10 @@ export default function TweetList({
   const ShareTweet = () => {
     console.log('share modal');
   };
+  const callbackDisplay = () => {
+    setDispaly(false);
+  };
+  console.log('parents display', display);
 
   return (
     <Wrapper>
@@ -109,7 +111,10 @@ export default function TweetList({
             <UserName>{userName}</UserName>
             <CreateTime>{createdTime}</CreateTime>
           </UserInfoWrap>
-          <SnsBtn onFocus={setTweetinfo}>
+          <SnsBtn
+            onFocus={() => setDispaly(true)}
+            onBlur={() => setDispaly(false)}
+          >
             <svg
               fill="none"
               strokeWidth={1.5}
@@ -124,7 +129,14 @@ export default function TweetList({
                 d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
               />
             </svg>
-            <SetTweetInfo />
+            {display === true ? (
+              <SetTweetInfo
+                display={display}
+                callbackDisplay={callbackDisplay}
+              />
+            ) : (
+              ''
+            )}
           </SnsBtn>
         </UserInfoWrapper>
         <TweetValue>
