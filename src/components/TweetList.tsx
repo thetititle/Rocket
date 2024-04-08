@@ -2,7 +2,10 @@ import styled from 'styled-components';
 import { UserAvatar } from '../GlobalStyle';
 import { useState } from 'react';
 import { Itweet } from './TimeLine';
-import SetTweetInfo from './SetTweetInfo';
+// import SetTweetInfo from './SetTweetInfo';
+import { auth, db, storage } from '../firebase';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 
 // 트윗
 const Wrapper = styled.div`
@@ -36,6 +39,9 @@ const CreateTime = styled.span`
 `;
 const TweetValue = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 const Photo = styled.img`
   width: 100%;
@@ -75,16 +81,18 @@ const SnsBtn = styled.button`
 `;
 
 export default function TweetList({
+  id,
   text,
   createdTime,
   userName,
   imgUrl,
+  userId,
 }: Itweet) {
   const [isLikes, setLikes] = useState<boolean>(false);
   const [hasComment, setComment] = useState<boolean>(false);
   const [reTweet, setRetweet] = useState<boolean>(false);
-  const [display, setDispaly] = useState(false);
-
+  // const [display, setDispaly] = useState(false);
+  const user = auth.currentUser;
   const likeThisTweet = () => {
     setLikes(!isLikes);
   };
@@ -97,10 +105,26 @@ export default function TweetList({
   const ShareTweet = () => {
     console.log('share modal');
   };
-  const callbackDisplay = () => {
-    setDispaly(false);
+  const deleteTweet = async () => {
+    const accept = confirm(
+      '정말로 게시된 로켓을 파기합니까?'
+    );
+    // 삭제
+    if (!accept || user?.uid !== userId) return;
+    try {
+      await deleteDoc(doc(db, 'tweets', id));
+      if (imgUrl) {
+        const imgRef = ref(
+          storage,
+          `tweets/${user.uid}/${id}`
+        );
+        await deleteObject(imgRef);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+    }
   };
-  console.log('parents display', display);
 
   return (
     <Wrapper>
@@ -111,33 +135,39 @@ export default function TweetList({
             <UserName>{userName}</UserName>
             <CreateTime>{createdTime}</CreateTime>
           </UserInfoWrap>
-          <SnsBtn
-            onFocus={() => setDispaly(true)}
-            onBlur={() => setDispaly(false)}
-          >
-            <svg
-              fill="none"
-              strokeWidth={1.5}
-              stroke="#787878"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
+          {user?.uid === userId ? (
+            <SnsBtn
+              onClick={deleteTweet}
+              // onFocus={() => setDispaly(true)}
+              // onBlur={() => setDispaly(false)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-              />
-            </svg>
-            {display === true ? (
-              <SetTweetInfo
-                display={display}
-                callbackDisplay={callbackDisplay}
-              />
-            ) : (
-              ''
-            )}
-          </SnsBtn>
+              <svg
+                fill="#787878"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+              </svg>
+              {/* <svg
+                fill="none"
+                strokeWidth={1.5}
+                stroke="#787878"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                />
+              </svg>
+              {display === true ? (
+                <SetTweetInfo id={id} userId={userId} />
+              ) : null} */}
+            </SnsBtn>
+          ) : null}
         </UserInfoWrapper>
         <TweetValue>
           {text} {imgUrl ? <Photo src={imgUrl} /> : null}

@@ -5,22 +5,11 @@ import {
   Radio,
   Label,
 } from './DropdownNav';
-
-interface isDisplay {
-  display: boolean;
-  callbackDisplay(): void;
-}
-
-export default function SetTweetInfo(props: isDisplay) {
-  console.log('props: isDisplay', props.display);
-  const propsDisplay = () => {
-    props.display === false;
-    props.callbackDisplay;
-  };
+export default function SetTweetInfo() {
   return (
     <Wrapper>
       <Ul>
-        <Li onClick={propsDisplay}>
+        <Li>
           <Radio
             type="radio"
             name="modifyTweet"

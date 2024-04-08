@@ -118,7 +118,7 @@ export default function TweetForm() {
       if (imgFile) {
         const locationRef = ref(
           storage,
-          `tweets/${user.uid}-${user.displayName}/${doc.id}`
+          `tweets/${user.uid}/${doc.id}`
         );
         const result = await uploadBytes(
           locationRef,
