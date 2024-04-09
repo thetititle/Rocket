@@ -24,23 +24,15 @@ export const Ul = styled.ul`
 export const Li = styled.li`
   height: 27px;
   line-height: 27px;
-`;
-export const Radio = styled.input`
-  &[type='radio'] {
-    display: none;
-  }
-`;
-export const Label = styled.label`
-  cursor: pointer;
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 5px;
-  transition: 0.3s;
   svg {
-    width: 20px;
+    width: 24px;
+    height: auto;
   }
   &:hover {
     color: var(--highLight);
-    transition: 0.3s;
   }
 `;
