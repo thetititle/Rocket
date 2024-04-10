@@ -94,7 +94,6 @@ export default function TweetList({
   const [display, setDispaly] = useState<boolean>(false);
   const [isUpdate, setUpdate] = useState<boolean>(false);
   const user = auth.currentUser;
-  const docId = id;
   const likeThisTweet = () => {
     setLikes(!isLikes);
   };
@@ -109,8 +108,6 @@ export default function TweetList({
   };
   const callBackFunc = (data: boolean) => {
     setUpdate(data);
-    console.log('부모', id);
-    console.log('취소', data);
   };
   const callBackFunc2 = (data: boolean) => {
     setUpdate(data);
@@ -148,7 +145,7 @@ export default function TweetList({
                 </svg>
                 {display === true ? (
                   <SetTweetInfo
-                    docId={docId}
+                    id={id}
                     userId={userId}
                     imgUrl={imgUrl}
                     isUpdate={isUpdate}
@@ -259,6 +256,7 @@ export default function TweetList({
           <EditTweet
             text={text}
             imgUrl={imgUrl}
+            id={id}
             callBack={callBackFunc2}
           />
         )}

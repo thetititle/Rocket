@@ -90,7 +90,7 @@ export default function EditTweet({
   text,
   imgUrl,
   callBack,
-  docId,
+  id,
 }: any) {
   const user = auth.currentUser;
   const [editimgFile, setEditImgFile] =
@@ -105,7 +105,6 @@ export default function EditTweet({
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setEditText(e.target.value);
-    console.log('자식', docId);
   };
   const editImage = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -129,17 +128,18 @@ export default function EditTweet({
     if (!user || editText === '' || editText.length > 150)
       return;
     try {
-      const editRef = doc(db, 'tweets', docId);
+      const editRef = doc(db, 'tweets', id);
       await updateDoc(editRef, {
         text: editText,
       });
       // if(editimgFile){
 
       // }
-      // setEditText('');
+      setEditText('');
     } catch (error) {
       console.log(error);
     } finally {
+      callBack(false);
     }
   };
 
