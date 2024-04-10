@@ -29,7 +29,6 @@ export default function SetTweetInfo({
     }
   };
   const updateTweet = () => {
-    console.log('isUpdate');
     callBack(true);
   };
   return (

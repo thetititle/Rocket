@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { UserAvatar } from '../GlobalStyle';
 import { auth, db, storage } from '../firebase';
 import { useState } from 'react';
 import {
@@ -7,7 +6,11 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
-import { collection, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 
 const Wrapper = styled.form`
   height: 120px;
@@ -29,6 +32,7 @@ const TextArea = styled.textarea`
   color: var(--fontDefault);
   background-color: transparent;
   border-radius: 5px;
+  font-family: 'AppleSDGothicNeoR00';
   &:focus {
     outline: none;
   }
@@ -86,9 +90,11 @@ export default function EditTweet({
   text,
   imgUrl,
   callBack,
+  docId,
 }: any) {
   const user = auth.currentUser;
-  const [imgFile, setImgFile] = useState<File | null>(null);
+  const [editimgFile, setEditImgFile] =
+    useState<File | null>(null);
   const [editText, setEditText] = useState(text);
 
   const onclick = () => {
@@ -99,20 +105,20 @@ export default function EditTweet({
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setEditText(e.target.value);
+    console.log('자식', docId);
   };
-  const upLoadImage = (
+  const editImage = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { files } = e.target;
     if (files) {
-      // 최대용량 1MB 제한
       let maxSize = 1 * 1024 * 1024;
       let fileSize = files[0].size;
       if (fileSize > maxSize) {
         confirm('첨부파일 최대용량은 1MB입니다.');
         return;
       } else {
-        setImgFile(files[0]);
+        setEditImgFile(files[0]);
       }
     }
   };
@@ -120,31 +126,21 @@ export default function EditTweet({
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    // if (!user || text === '' || text.length > 150) return;
-    // try {
-    //   const doc = await addDoc(collection(db, 'tweets'), {
-    //     text,
-    //     createdTime: Date.now(),
-    //     userName: user?.displayName || 'Anonymous',
-    //     userId: user?.uid,
-    //   });
-    //   if (imgFile) {
-    //     const locationRef = ref(
-    //       storage,
-    //       `tweets/${user.uid}/${doc.id}`
-    //     );
-    //     const result = await uploadBytes(
-    //       locationRef,
-    //       imgFile
-    //     );
-    //     const url = await getDownloadURL(result.ref);
-    //     await updateDoc(doc, { imgUrl: url });
-    //   }
-    // } catch (error) {
-    //   console.log('error', error);
-    // } finally {
-    //   setImgFile(null);
-    // }
+    if (!user || editText === '' || editText.length > 150)
+      return;
+    try {
+      const editRef = doc(db, 'tweets', docId);
+      await updateDoc(editRef, {
+        text: editText,
+      });
+      // if(editimgFile){
+
+      // }
+      // setEditText('');
+    } catch (error) {
+      console.log(error);
+    } finally {
+    }
   };
 
   return (
@@ -177,7 +173,7 @@ export default function EditTweet({
             </FileUpLoad>
             <FileInput
               name="file"
-              onChange={upLoadImage}
+              onChange={editImage}
               type="file"
               id="file"
               accept="image/*"

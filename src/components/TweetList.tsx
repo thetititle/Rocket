@@ -29,6 +29,7 @@ const TimeLineWrap = styled.div`
 const UserInfoWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  height: 24px;
 `;
 const UserInfoWrap = styled.div`
   display: flex;
@@ -93,6 +94,7 @@ export default function TweetList({
   const [display, setDispaly] = useState<boolean>(false);
   const [isUpdate, setUpdate] = useState<boolean>(false);
   const user = auth.currentUser;
+  const docId = id;
   const likeThisTweet = () => {
     setLikes(!isLikes);
   };
@@ -107,6 +109,8 @@ export default function TweetList({
   };
   const callBackFunc = (data: boolean) => {
     setUpdate(data);
+    console.log('부모', id);
+    console.log('취소', data);
   };
   const callBackFunc2 = (data: boolean) => {
     setUpdate(data);
@@ -144,7 +148,7 @@ export default function TweetList({
                 </svg>
                 {display === true ? (
                   <SetTweetInfo
-                    id={id}
+                    docId={docId}
                     userId={userId}
                     imgUrl={imgUrl}
                     isUpdate={isUpdate}
