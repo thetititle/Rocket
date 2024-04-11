@@ -3,13 +3,7 @@ import { UserAvatar } from '../GlobalStyle';
 import { useState } from 'react';
 import { Itweet } from './TimeLine';
 import SetTweetInfo from './SetTweetInfo';
-import { auth, db, storage } from '../firebase';
-import {
-  deleteDoc,
-  doc,
-  updateDoc,
-} from 'firebase/firestore';
-import { deleteObject, ref } from 'firebase/storage';
+import { auth } from '../firebase';
 import TweetValue from './TweetValue';
 import EditTweet from './EditTweet';
 

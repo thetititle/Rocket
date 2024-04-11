@@ -95,7 +95,9 @@ export default function TweetForm() {
       let maxSize = 1 * 1024 * 1024;
       let fileSize = files[0].size;
       if (fileSize > maxSize) {
-        confirm('첨부파일 최대용량은 1MB입니다.');
+        confirm(
+          '로켓에 싣을 수 있는 파일의 최대용량은 1MB입니다.'
+        );
         return;
       } else {
         setImgFile(files[0]);
@@ -148,7 +150,7 @@ export default function TweetForm() {
         ></TextArea>
         <BtnWrap>
           <FileWrap>
-            <FileUpLoad htmlFor="file">
+            <FileUpLoad htmlFor="originfile">
               <svg
                 fill="none"
                 strokeWidth={1.5}
@@ -165,10 +167,10 @@ export default function TweetForm() {
               </svg>
             </FileUpLoad>
             <FileInput
-              name="file"
+              name="filoriginfilee"
               onChange={upLoadImage}
               type="file"
-              id="file"
+              id="originfile"
               accept="image/*"
             />
           </FileWrap>
