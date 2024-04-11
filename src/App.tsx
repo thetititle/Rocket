@@ -43,16 +43,15 @@ function App() {
     await auth.authStateReady();
     setLoading(false);
   };
-  // window.onbeforeunload = (e) => {
-  //   e.preventDefault();
-  //   if (!isLoading) {
-  //     if ((e.returnValue = true)) {
-  //       auth.signOut();
-  //     } else {
-  //       return;
-  //     }
-  //   }
-  // };
+
+  window.onpagehide = (e) => {
+    e.preventDefault();
+    if (!isLoading) {
+      auth.signOut();
+      if ((e.returnValue = true)) {
+      }
+    }
+  };
   useEffect(() => {
     init();
   }, []);
