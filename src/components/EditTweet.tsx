@@ -10,7 +10,7 @@ import {
 import { doc, updateDoc } from 'firebase/firestore';
 
 const Wrapper = styled.form`
-  height: 120px;
+  height: 123px;
   display: flex;
   gap: 10px;
 `;
@@ -130,37 +130,54 @@ export default function EditTweet({
     useState<File | null>(null);
   const [editText, setEditText] = useState(text);
   const [isDelete, setDelete] = useState<boolean>(false);
+  const [editFile, setEditFile] = useState<boolean>(false);
+  const [addimgUrl, setaAddimgUrl] = useState<string>('');
 
   const onclick = () => {
     callBack(false);
     setEditText('');
     setEditImgFile(null);
     setDelete(false);
+    // setaAdimgUrl('');
+    // setHasFile(false);
   };
   const onChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setEditText(e.target.value);
   };
-  const DeletePhoto = () => {
-    const Accept = confirm('정말로 이미지를 삭제합니까?');
-    if (!Accept) return;
-    setDelete(true);
-  };
+
   const editImage = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { files } = e.target;
     if (files) {
+      // 최대용량 1MB 제한
       let maxSize = 1 * 1024 * 1024;
       let fileSize = files[0].size;
       if (fileSize > maxSize) {
-        confirm('첨부파일 최대용량은 1MB입니다.');
+        confirm(
+          '로켓에 싣을 수 있는 파일의 최대용량은 1MB입니다.'
+        );
         return;
       } else {
+        setEditFile(true);
         setEditImgFile(files[0]);
+        var reader = new FileReader();
+        reader.readAsDataURL(files[0]);
+        reader.addEventListener(
+          'load',
+          (e: ProgressEvent<FileReader>) => {
+            if (!e || !e.target) return;
+            const url: string = reader.result as string;
+            setaAddimgUrl(url);
+          }
+        );
       }
     }
+  };
+  const DeletePhoto = () => {
+    setDelete(true);
   };
   const onSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -183,7 +200,6 @@ export default function EditTweet({
         const url = await getDownloadURL(result.ref);
         await updateDoc(EditDoc, { imgUrl: url });
       }
-
       if (isDelete) {
         try {
           const imgRef = ref(
@@ -197,6 +213,14 @@ export default function EditTweet({
         } catch (error) {
           console.log(error);
         }
+        if (editimgFile) {
+          const result = await uploadBytes(
+            locationRef,
+            editimgFile
+          );
+          const url = await getDownloadURL(result.ref);
+          await updateDoc(EditDoc, { imgUrl: url });
+        }
       }
       await updateDoc(EditDoc, {
         text: editText,
@@ -205,6 +229,8 @@ export default function EditTweet({
       setEditText('');
       setEditImgFile(null);
       setDelete(false);
+      // setaAdimgUrl('');
+      // setHasFile(false);
     } catch (error) {
       console.log(error);
     } finally {
@@ -223,53 +249,31 @@ export default function EditTweet({
           onChange={onChange}
         ></TextArea>
         <Div>
-          {!isDelete ? (
-            imgUrl !== null ? (
-              <PhotoWrap onClick={DeletePhoto}>
+          {
+            <PhotoWrap onClick={DeletePhoto}>
+              {!isDelete && !editFile ? (
                 <Photo src={imgUrl} />
-                <PhotoDeco>
-                  <svg
-                    fill="#F5F5F5"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      clipRule="evenodd"
-                      fillRule="evenodd"
-                      d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
-                    />
-                  </svg>
-                </PhotoDeco>
-              </PhotoWrap>
-            ) : (
-              <FileWrap>
-                <FileUpLoad htmlFor="editfile">
-                  <svg
-                    fill="none"
-                    strokeWidth={1.5}
-                    stroke="#1D9BF0"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                    />
-                  </svg>
-                </FileUpLoad>
-                <FileInput
-                  name="editfile"
-                  onChange={editImage}
-                  type="file"
-                  id="editfile"
-                  accept="image/*"
-                />
-              </FileWrap>
-            )
-          ) : (
+              ) : null}
+              {isDelete && editFile ? (
+                <Photo src={addimgUrl} />
+              ) : null}
+              <PhotoDeco>
+                <svg
+                  fill="#F5F5F5"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    clipRule="evenodd"
+                    fillRule="evenodd"
+                    d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
+                  />
+                </svg>
+              </PhotoDeco>
+            </PhotoWrap>
+          }
+          {isDelete && !editFile ? (
             <FileWrap>
               <FileUpLoad htmlFor="editfile">
                 <svg
@@ -295,7 +299,7 @@ export default function EditTweet({
                 accept="image/*"
               />
             </FileWrap>
-          )}
+          ) : null}
           <BtnWrap>
             <BtnQuit onClick={onclick}>CANCEL</BtnQuit>
             <BtnPost>FIRE</BtnPost>

@@ -12,8 +12,11 @@ const Wrapper = styled.div`
 `;
 // tab
 const TabMenu = styled.ul`
-  width: 100%;
+  width: 598px;
   display: flex;
+  position: fixed;
+  background-color: var(--bgColor);
+  z-index: 1;
   .menu {
     flex: 1;
     height: 54px;
@@ -33,7 +36,7 @@ const TabMenu = styled.ul`
 
 import {
   collection,
-  getDocs,
+  // getDocs,
   limit,
   onSnapshot,
   orderBy,
