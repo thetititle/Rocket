@@ -50,31 +50,38 @@ export const FireBtn = styled.button`
 `;
 
 export default function Navigation() {
+  const navClick = (e: React.MouseEvent) => {
+    var target = e.target;
+    var Current = e.currentTarget;
+    // Current.classList.add('active');
+    console.log('target :', target);
+    console.log('target :', Current);
+  };
   return (
     <Wrapper>
       <Link to="/home">
         <Logo src={logo} />
       </Link>
       <Ul>
-        <Li>
+        <Li onClick={navClick} className="active">
           <NavLink to="/home">
             <Icon src={homeIcon} />
             <h2>Home</h2>
           </NavLink>
         </Li>
-        <Li>
+        <Li onClick={navClick}>
           <NavLink to="#">
             <Icon src={exporteIcon} />
             <h2>Expore</h2>
           </NavLink>
         </Li>
-        <Li>
+        <Li onClick={navClick}>
           <NavLink to="#">
             <Icon src={notificatuonIcon} />
             <h2>Notification</h2>
           </NavLink>
         </Li>
-        <Li>
+        <Li onClick={navClick}>
           <NavLink to="#">
             <Icon src={bookmarkIcon} />
             <h2>Bookmark</h2>
