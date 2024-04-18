@@ -9,7 +9,11 @@ import bookmarkIcon from '../asset/img/bookmark.png';
 export const Wrapper = styled.div`
   flex: 1;
   padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
+export const Wrap = styled.div``;
 export const Logo = styled.img`
   height: 54px;
   object-fit: cover;
@@ -48,6 +52,7 @@ export const FireBtn = styled.button`
     background-color: var(--highLight);
   }
 `;
+export const User = styled.div``;
 
 export default function Navigation() {
   const navClick = (e: React.MouseEvent) => {
@@ -59,38 +64,41 @@ export default function Navigation() {
   };
   return (
     <Wrapper>
-      <Link to="/home">
-        <Logo src={logo} />
-      </Link>
-      <Ul>
-        <Li onClick={navClick} className="active">
-          <NavLink to="/home">
-            <Icon src={homeIcon} />
-            <h2>Home</h2>
-          </NavLink>
-        </Li>
-        <Li onClick={navClick}>
-          <NavLink to="#">
-            <Icon src={exporteIcon} />
-            <h2>Expore</h2>
-          </NavLink>
-        </Li>
-        <Li onClick={navClick}>
-          <NavLink to="#">
-            <Icon src={notificatuonIcon} />
-            <h2>Notification</h2>
-          </NavLink>
-        </Li>
-        <Li onClick={navClick}>
-          <NavLink to="#">
-            <Icon src={bookmarkIcon} />
-            <h2>Bookmark</h2>
-          </NavLink>
-        </Li>
-      </Ul>
-      <FireBtn>
-        <h2>FIRE</h2>
-      </FireBtn>
+      <Wrap>
+        <Link to="/home">
+          <Logo src={logo} />
+        </Link>
+        <Ul>
+          <Li onClick={navClick} className="active">
+            <NavLink to="/home">
+              <Icon src={homeIcon} />
+              <h2>Home</h2>
+            </NavLink>
+          </Li>
+          <Li onClick={navClick}>
+            <NavLink to="#">
+              <Icon src={exporteIcon} />
+              <h2>Expore</h2>
+            </NavLink>
+          </Li>
+          <Li onClick={navClick}>
+            <NavLink to="#">
+              <Icon src={notificatuonIcon} />
+              <h2>Notification</h2>
+            </NavLink>
+          </Li>
+          <Li onClick={navClick}>
+            <NavLink to="#">
+              <Icon src={bookmarkIcon} />
+              <h2>Bookmark</h2>
+            </NavLink>
+          </Li>
+        </Ul>
+        <FireBtn>
+          <h2>FIRE</h2>
+        </FireBtn>
+      </Wrap>
+      <User></User>
     </Wrapper>
   );
 }
