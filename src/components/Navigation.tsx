@@ -56,11 +56,12 @@ export const User = styled.div``;
 
 export default function Navigation() {
   const navClick = (e: React.MouseEvent) => {
-    var target = e.target;
     var Current = e.currentTarget;
-    // Current.classList.add('active');
-    console.log('target :', target);
-    console.log('target :', Current);
+    // var Next = Current.nextElementSibling;
+    // var Prev = Current.previousElementSibling;
+  };
+  const showPostModal = () => {
+    console.log('showModal');
   };
   return (
     <Wrapper>
@@ -68,8 +69,8 @@ export default function Navigation() {
         <Link to="/home">
           <Logo src={logo} />
         </Link>
-        <Ul>
-          <Li onClick={navClick} className="active">
+        <Ul id="navWrap">
+          <Li onClick={navClick}>
             <NavLink to="/home">
               <Icon src={homeIcon} />
               <h2>Home</h2>
@@ -94,11 +95,11 @@ export default function Navigation() {
             </NavLink>
           </Li>
         </Ul>
-        <FireBtn>
+        <FireBtn onClick={showPostModal}>
           <h2>FIRE</h2>
         </FireBtn>
       </Wrap>
-      <User></User>
+      <User>유저</User>
     </Wrapper>
   );
 }
