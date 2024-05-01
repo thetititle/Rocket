@@ -56,7 +56,7 @@ export const User = styled.div``;
 
 export default function Navigation() {
   const navClick = (e: React.MouseEvent) => {
-    var Current = e.currentTarget;
+    // var Current = e.currentTarget;
     // var Next = Current.nextElementSibling;
     // var Prev = Current.previousElementSibling;
   };
